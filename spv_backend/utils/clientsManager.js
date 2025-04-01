@@ -13,6 +13,13 @@ export function generateClientsList(count = 100, initialBalance = 10000) {
     clientBalancesMap = generateClients(count, initialBalance);
 }
 
+export function getClientNames() {
+    if (!clientBalancesMap) {
+        throw new Error('Client balances map has not been initialized.');
+    }
+    return Array.from(clientBalancesMap.keys());
+}
+
 export function updateTransactionsHistory(block) {
     const { blockNumber, transactions } = block;
 
@@ -160,13 +167,13 @@ export function updateTransactionsHistoryCuckoo(block) {
 //     return { transactions };
 // }
 
-export function generateTransactions(numTransactions = 20000) {
+export function generateTransactions(numTransactions = 100) {
     const transactions = [];
     const clientNames = Array.from(clientBalancesMap.keys());
 
     for (let i = 0; i < numTransactions; i++) {
-        const sender = clientNames[0];
-        let receiver = clientNames[1];
+        const sender = clientNames[Math.floor(Math.random() * clientNames.length)];
+        let receiver = clientNames[Math.floor(Math.random() * clientNames.length)];
 
         // Ensure sender ≠ receiver
         while (receiver === sender) {
@@ -176,7 +183,7 @@ export function generateTransactions(numTransactions = 20000) {
         const maxAmount = clientBalancesMap.get(sender).balance; // Get sender's balance
         if (maxAmount <= 0) continue;
 
-        const amount = 0.001; // Random amount (1 - 50 or sender's balance)
+        const amount = parseFloat((Math.random() * Math.min(maxAmount, 50) + 1).toFixed(2)); // Random amount between 1 and min(maxAmount, 50)
 
         // Create transaction
         const transaction = {
