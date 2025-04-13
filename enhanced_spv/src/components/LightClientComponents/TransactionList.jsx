@@ -44,7 +44,7 @@ const TransactionsList = ({ transactions, name, selectedMode }) => {
 
   const dummyTransaction = {
     txid: 373838549630409,
-    blockNumber: 10,
+    blockNumber: 3,
     sender: "Archie Marquardt",
     receiver: "Ekank Chhaparwal",
     amount: 100,

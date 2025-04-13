@@ -24,7 +24,7 @@ export const transactionLogs_Cuckoo = [];
 
 export function generateBlockahin() {
     generateClientsList();
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
         const transactions = generateTransactions().transactions;
         for (const tx of transactions) {
             node.addTransactionToPool(tx);
