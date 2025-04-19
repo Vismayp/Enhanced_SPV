@@ -3,7 +3,6 @@ import { light, node, initiateTransaction } from "../FullnodeAndClientManager.js
 import { clientTransactionsHistory, getClientNames } from "../utils/clientsManager.js";
 const router = express.Router();
 import crypto from "crypto";
-
 router.get("/headers", (req, res) => {
     res.json({ headers: light.getBlockHeaders(node) });
 });
@@ -31,10 +30,11 @@ router.post("/transferCurrency", (req, res) => {
 router.post("/getMerkleProof", (req, res) => {
     const { txid, blockNumber } = req.body;
     try {
-        const start = performance.now();
+        const start = process.hrtime.bigint();;
         const [proof, transactionHash, rootHash] = light.provideMerkleProof(txid, blockNumber, node);
-        const end = performance.now();
-        const timeTaken = end - start;
+        const end = process.hrtime.bigint();;
+        const timeTaken = (Number(end - start) / 1_000_000) + " milliseconds";
+
         if (!proof) {
             return res.status(404).json({ message: "Merkle proof not found", timeTaken });
         }

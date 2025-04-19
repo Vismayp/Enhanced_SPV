@@ -39,6 +39,7 @@ class FullNode1 {
     provideMerkleProof(transactionId, blockHeader) {
         for (const block of this.blockchain.chain) {
             if (block.header.calculateHash() === blockHeader.calculateHash()) {
+                // console.log(block.staticAccumulator.check(transactionId.toString()));
                 if (!block.staticAccumulator.check(transactionId)) {
                     return [null, null, null];
                 }

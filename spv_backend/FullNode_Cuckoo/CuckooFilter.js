@@ -1,91 +1,110 @@
+import { randomBytes } from 'crypto';
 import crypto from 'crypto';
-
 class CuckooFilter {
-    constructor(transactions, capacity = null, bucketSize = 4, maxKicks = 500) {
+    constructor(transactions, capacity = null, bucketSize = 2, maxKicks = 500) {
+        // Calculate capacity if not provided
         this.capacity = capacity || transactions.length * 2;
         this.bucketSize = bucketSize;
         this.maxKicks = maxKicks;
         this.table = Array.from({ length: this.capacity }, () => []);
 
-        transactions.forEach(tx => this.add(tx.txid));
+        // Automatically insert txids from transaction objects
+        transactions.forEach(tx => {
+            if (tx.txid) {
+                this.add(tx.txid);
+            }
+        });
     }
 
-    _hashes(txid) {
-        const txidBuffer = Buffer.from(txid.toString());
-        const hash1 = parseInt(crypto.createHash('sha256').update(txidBuffer).digest('hex'), 16) % this.capacity;
-        const hash2 = parseInt(crypto.createHash('md5').update(txidBuffer).digest('hex'), 16) % this.capacity;
-        return [hash1, hash2];
+    _hash(str) {
+        const hash = crypto.createHash('sha256').update(String(str)).digest('hex');
+        return parseInt(hash.slice(0, 8), 16) % this.capacity;
     }
 
     _fingerprint(txid) {
-        return crypto.createHash('sha256').update(txid.toString()).digest('hex').slice(0, 4);
+        return (txid).toString(16).slice(0, 4);
+    }
+
+    _getIndex(txid, fp) {
+        let i1 = this._hash(txid);
+        let i2 = (i1 ^ this._hash(fp)) % this.capacity;
+        return [i1, i2];
     }
 
     add(txid) {
-        let fp = this._fingerprint(txid);
-        const [index1, index2] = this._hashes(txid);
+        const fp = this._fingerprint(txid);
+        const [i1, i2] = this._getIndex(txid, fp);
 
-        if (this.table[index1].length < this.bucketSize) {
-            this.table[index1].push(fp);
+        if (this.table[i1].length < this.bucketSize) {
+            this.table[i1].push(fp);
             return true;
         }
-        if (this.table[index2].length < this.bucketSize) {
-            this.table[index2].push(fp);
+        if (this.table[i2].length < this.bucketSize) {
+            this.table[i2].push(fp);
             return true;
         }
 
-        let index = Math.random() < 0.5 ? index1 : index2;
-        for (let i = 0; i < this.maxKicks; i++) {
-            const evictedIndex = Math.floor(Math.random() * this.table[index].length);
-            const evictedFp = this.table[index][evictedIndex];
-            this.table[index][evictedIndex] = fp;
-            fp = evictedFp;
-            const [index1, index2] = this._hashes(fp);
-            index = index === index1 ? index2 : index1;
+        let i = Math.random() < 0.5 ? i1 : i2;
+        let fpToEvict = fp;
 
-            if (this.table[index].length < this.bucketSize) {
-                this.table[index].push(fp);
+        for (let n = 0; n < this.maxKicks; n++) {
+            const randIndex = Math.floor(Math.random() * this.table[i].length);
+            [this.table[i][randIndex], fpToEvict] = [fpToEvict, this.table[i][randIndex]];
+            i = (i ^ this._hash(fpToEvict)) % this.capacity;
+
+            if (this.table[i].length < this.bucketSize) {
+                this.table[i].push(fpToEvict);
                 return true;
             }
         }
 
-        return false;
+        return false; // Could not insert (filter likely full)
     }
 
     check(txid) {
         const fp = this._fingerprint(txid);
-        const [index1, index2] = this._hashes(txid);
-        return this.table[index1].includes(fp) || this.table[index2].includes(fp);
+        const [i1, i2] = this._getIndex(txid, fp);
+        return this.table[i1].includes(fp) || this.table[i2].includes(fp);
     }
 
     delete(txid) {
         const fp = this._fingerprint(txid);
-        const [index1, index2] = this._hashes(txid);
+        const [i1, i2] = this._getIndex(txid, fp);
 
-        if (this.table[index1].includes(fp)) {
-            this.table[index1] = this.table[index1].filter(f => f !== fp);
+        let i1Idx = this.table[i1].indexOf(fp);
+        let i2Idx = this.table[i2].indexOf(fp);
+
+        if (i1Idx !== -1) {
+            this.table[i1].splice(i1Idx, 1);
             return true;
         }
-        if (this.table[index2].includes(fp)) {
-            this.table[index2] = this.table[index2].filter(f => f !== fp);
+        if (i2Idx !== -1) {
+            this.table[i2].splice(i2Idx, 1);
             return true;
         }
         return false;
     }
 }
 
+
 export default CuckooFilter;
 
 
-// const ids = Array.from({ length: 5000 }, (_, i) => ({ txid: (i + 1).toString() }));
-// const filter = new CuckooFilter(ids);
+// Generate 500 random transactions
+// const transactions = Array.from({ length: 500 }, () => ({
+//     txid: randomBytes(16).toString('hex'),
+// }));
 
-// let falsePositives = 0;
+// const filter = new CuckooFilter(transactions);
 
-// for (let i = 1100; i <= 1200; i++) {
-//     if (filter.check(i.toString())) {
-//         falsePositives++;
+// // Test all transactions
+// let fn = 0;
+// transactions.forEach(tx => {
+
+//     if(filter.check(tx.txid)) {
+//         fn++;
 //     }
-// }
+// });
 
-// console.log(`False positives: ${falsePositives}`);
+// console.log(fn);
+

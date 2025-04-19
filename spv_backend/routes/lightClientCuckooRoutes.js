@@ -31,10 +31,11 @@ router.post("/transferCurrency", (req, res) => {
 router.post("/getMerkleProof", (req, res) => {
     const { txid, blockNumber } = req.body;
     try {
-        const start = performance.now();
+        const start = process.hrtime.bigint();;
         const [proof, transactionHash, rootHash] = lightCuckoo.provideMerkleProof(txid, blockNumber, nodeCuckoo);
-        const end = performance.now();
-        const timeTaken = end - start;
+        const end = process.hrtime.bigint();;
+        const timeTaken = (Number(end - start) / 1_000_000) + " milliseconds";
+
         if (!proof) {
             return res.status(404).json({ message: "Merkle proof not found", timeTaken });
         }

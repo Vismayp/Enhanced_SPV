@@ -20,6 +20,7 @@ class LightClient {
         }
 
         const blockHeader = this.blockHeaders[blockNumber];
+        // console.log(blockHeader);
         return fullNode.provideMerkleProof(transactionId, blockHeader);
     }
 

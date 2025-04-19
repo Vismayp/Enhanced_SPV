@@ -167,7 +167,7 @@ export function updateTransactionsHistoryCuckoo(block) {
 //     return { transactions };
 // }
 
-export function generateTransactions(numTransactions = 100) {
+export function generateTransactions(numTransactions = 100000) {
     const transactions = [];
     const clientNames = Array.from(clientBalancesMap.keys());
 
