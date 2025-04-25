@@ -10,14 +10,25 @@ This project consists of a backend and frontend that are deployed to Railway.
 2. Connect your GitHub repository
 3. Add the `spv_backend` directory as a service
 4. Set the following environment variables:
-   - `FRONTEND_URL`: URL of your deployed frontend (e.g., https://your-frontend-app.railway.app)
+   - `FRONTEND_URL`: URL of your deployed frontend (e.g., https://enhancedspv-production.up.railway.app)
 
 ### Frontend Deployment
 
 1. Create a new service in the same Railway project
 2. Connect the `enhanced_spv` directory as a service
 3. Set the following environment variables:
-   - `REACT_APP_API_URL`: URL of your deployed backend (e.g., https://your-backend-app.railway.app)
+   - `REACT_APP_API_URL`: URL of your deployed backend (e.g., https://backend-production-96d0.up.railway.app)
+
+## CORS Configuration
+
+If you encounter CORS errors:
+
+1. Make sure the backend's CORS configuration includes the exact frontend URL
+2. The backend has been updated to allow requests from:
+   - `http://localhost:3000` (for local development)
+   - `https://enhancedspv-production.up.railway.app` (deployed frontend)
+   - Any URL specified in the `FRONTEND_URL` environment variable
+3. If you're still having CORS issues, you may need to redeploy the backend with your specific frontend URL added to the allowed origins.
 
 ## Fix for "Cannot find module 'ajv/dist/compile/codegen'" Error
 
