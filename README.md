@@ -19,6 +19,21 @@ This project consists of a backend and frontend that are deployed to Railway.
 3. Set the following environment variables:
    - `REACT_APP_API_URL`: URL of your deployed backend (e.g., https://your-backend-app.railway.app)
 
+## Fix for "Cannot find module 'ajv/dist/compile/codegen'" Error
+
+If you encounter this error during build:
+
+1. A fix script (`fix-modules.js`) has been added that creates the necessary directory structure
+2. The script runs automatically before build via the prebuild hook
+3. If you still encounter issues, use the fallback solution with React 18:
+
+```bash
+# To use the fallback with React 18
+cd enhanced_spv
+cp package.alt.json package.json
+docker build -t enhanced-spv -f Dockerfile.fallback .
+```
+
 ## Alternative Docker Deployment
 
 If you're still experiencing npm issues with Railway deployment, you can use Docker:

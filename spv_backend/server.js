@@ -10,8 +10,14 @@ import fullNodeCuckooRoutes from "./routes/fullNodeCuckooRoutes.js";
 
 const app = express();
 app.use(express.json());
+
+// Updated CORS configuration to allow requests from the deployed frontend
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: [
+        process.env.FRONTEND_URL || "http://localhost:3000",
+        "https://enhancedspv-production.up.railway.app",
+        "https://railway.com"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
 }));
