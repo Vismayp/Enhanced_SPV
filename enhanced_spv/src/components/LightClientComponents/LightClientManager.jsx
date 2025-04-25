@@ -3,13 +3,14 @@ import { Paper, Box, Button, useTheme } from "@mui/material";
 import axios from "axios";
 import TransactionList from "./TransactionList"; // Assuming you have a TransactionList component
 import CurrencyTransfer from "./CurrencyTransfer";
+import config from "../../config";
 
 function LightClientManager({ selectedMode, name }) {
   const [transactions, setTransactions] = useState([]);
   const [clientNames, setClientNames] = useState([]);
   const [activeTab, setActiveTab] = useState("completed");
   const theme = useTheme();
-  const baseUrl = "http://localhost:8080";
+  const baseUrl = config.API_BASE_URL;
 
   const getEndpoint = () => {
     switch (selectedMode) {
@@ -26,7 +27,7 @@ function LightClientManager({ selectedMode, name }) {
   const test = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/lightclient/completedTransactions",
+        `${baseUrl}/lightclient/completedTransactions`,
         {
           method: "POST",
           headers: {

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Paper, Box, Button, useTheme } from "@mui/material";
 import axios from "axios";
 import TransactionList from "./TransactionList";
+import config from "../../config";
 
 function FullNodeLogs({ selectedBlockchain }) {
   const [transactions, setTransactions] = useState([]);
   const [activeTab, setActiveTab] = useState("completed");
   const theme = useTheme();
-  const baseUrl = "http://localhost:8080";
+  const baseUrl = config.API_BASE_URL;
 
   const getEndpoint = () => {
     switch (selectedBlockchain) {

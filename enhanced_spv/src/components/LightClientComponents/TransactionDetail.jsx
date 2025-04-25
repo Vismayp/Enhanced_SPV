@@ -10,12 +10,14 @@ import {
   Container,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
+import config from "../../config";
+
 const TransactionDetail = ({ transaction, selectedMode, onBack }) => {
   const [merkleProof, setMerkleProof] = useState(null);
   const [display, setDisplay] = useState(false);
   const [verificationResult, setVerificationResult] = useState(null);
 
-  const baseUrl = "http://localhost:8080";
+  const baseUrl = config.API_BASE_URL;
 
   const getEndpoint = () => {
     switch (selectedMode) {

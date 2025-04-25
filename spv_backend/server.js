@@ -10,14 +10,11 @@ import fullNodeCuckooRoutes from "./routes/fullNodeCuckooRoutes.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    next();
-});
-
+app.use(cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true
+}));
 
 // Register routes
 app.use("/fullnode", fullNodeRoutes);
@@ -31,8 +28,8 @@ app.get("/", (req, res) => {
     res.send("Blockchain simulation running...");
 });
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     generateBlockahin();
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });

@@ -13,6 +13,7 @@ import {
   Box,
 } from "@mui/material";
 import { Payment } from "@mui/icons-material";
+import config from "../../config";
 
 const CurrencyTransfer = ({ name, selectedMode, clients }) => {
   const [selectedClient, setSelectedClient] = useState(null);
@@ -20,7 +21,7 @@ const CurrencyTransfer = ({ name, selectedMode, clients }) => {
   const [open, setOpen] = useState(false);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
 
-  const baseUrl = "http://localhost:8080";
+  const baseUrl = config.API_BASE_URL;
 
   const getEndpoint = () => {
     switch (selectedMode) {
