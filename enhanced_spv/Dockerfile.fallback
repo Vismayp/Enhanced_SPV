@@ -3,12 +3,9 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Copy dependency files
-COPY package.json .
+COPY package.alt.json package.json
 COPY .npmrc .
 COPY fix-modules.js .
-
-# First install ajv explicitly to ensure it's available
-RUN npm install ajv@8.12.0 ajv-keywords@5.1.0 schema-utils@4.2.0 --no-package-lock --legacy-peer-deps
 
 # Then install all dependencies
 RUN npm install --no-package-lock --legacy-peer-deps
@@ -20,7 +17,7 @@ RUN node fix-modules.js
 COPY . .
 
 # Build the app
-RUN npm run build || (npm list && exit 1)
+RUN npm run build
 
 # Production environment
 FROM node:18-alpine

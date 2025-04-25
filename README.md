@@ -19,6 +19,29 @@ This project consists of a backend and frontend that are deployed to Railway.
 3. Set the following environment variables:
    - `REACT_APP_API_URL`: URL of your deployed backend (e.g., https://your-backend-app.railway.app)
 
+## Alternative Docker Deployment
+
+If you're still experiencing npm issues with Railway deployment, you can use Docker:
+
+1. For the backend:
+   ```bash
+   cd spv_backend
+   docker build -t spv-backend .
+   docker run -p 8080:8080 -e FRONTEND_URL=http://localhost:3000 spv-backend
+   ```
+
+2. For the frontend:
+   ```bash
+   cd enhanced_spv
+   docker build -t enhanced-spv .
+   docker run -p 3000:3000 -e REACT_APP_API_URL=http://localhost:8080 enhanced-spv
+   ```
+
+3. Deploy to Railway with Docker:
+   - Use the "Empty service" option in Railway
+   - Configure it to build from your Dockerfile
+   - Set the required environment variables
+
 ## Troubleshooting Deployment
 
 If you encounter npm dependency errors during deployment:
