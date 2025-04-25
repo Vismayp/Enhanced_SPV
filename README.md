@@ -19,6 +19,25 @@ This project consists of a backend and frontend that are deployed to Railway.
 3. Set the following environment variables:
    - `REACT_APP_API_URL`: URL of your deployed backend (e.g., https://your-backend-app.railway.app)
 
+## Troubleshooting Deployment
+
+If you encounter npm dependency errors during deployment:
+
+1. Both projects now use `npm install --no-package-lock` to avoid package-lock.json issues
+2. Each project has an `.npmrc` file with the following settings:
+   - `legacy-peer-deps=true` to handle dependency conflicts
+   - `save-exact=true` to ensure exact versions are used
+
+3. If you still see errors like "Missing X from lock file", try these steps:
+   - Delete node_modules and package-lock.json locally
+   - Run `npm install` in each project directory
+   - Commit the changes
+   - Redeploy on Railway
+
+4. Special handling for React 19+ errors:
+   - React 19 is still in alpha, consider downgrading to React 18 if necessary
+   - Add `--force` to the npm install command if needed
+
 ## Project Structure
 
 - `spv_backend`: Express.js backend for blockchain simulation
